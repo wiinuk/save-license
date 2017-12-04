@@ -1,0 +1,34 @@
+{
+  "name": "save-license",
+  "version": "0.0.3",
+  "description": "save-license",
+  "main": "out/src/index.js",
+  "dependencies": {
+    "esprima": "^4.0.0",
+    "tslib": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.6",
+    "@types/esprima": "^4.0.1",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^8.0.53",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "typescript": "^2.6.2"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run test",
+    "watch": "tsc -w -p .",
+    "test": "tsc -p . && mocha out/test/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiinuk/save-license.git"
+  },
+  "author": "wiinuk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wiinuk/save-license/issues"
+  },
+  "homepage": "https://github.com/wiinuk/save-license#readme"
+}
