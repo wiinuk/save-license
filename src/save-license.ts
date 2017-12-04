@@ -110,7 +110,7 @@ export const saveLicense = async (files: string[] | string, outFile: string, { p
     const ms1 = Date.now()
     console.log(`# Start save-license`)
     console.log(`  - Patterns: ${patterns.join(", ")}`)
-    console.log(`  - Encoding: ${encoding}`)
+    console.log(`  - Encoding: "${escape(encoding)}"`)
     console.log(``)
 
     console.log(`# Read licenses`)
@@ -119,15 +119,15 @@ export const saveLicense = async (files: string[] | string, outFile: string, { p
     for (const file of files) {
         const licenses = await getLicences(await readFile(file, encoding), patterns)
         for (const block of licenses) {
-            const start = block[0].loc!.start
             const text = block.map(c => c.value).join("\n")
             const hasText = licenseSet.has(text)
             if (hasText === false) {
                 licenseSet.add(text)
             }
             
+            const start = block[0].loc!.start
             const head = text.substr(0, 10)
-            console.log(`  - ${file} (${start.line}, ${start.column}) ${escape(head)}${head.length === text.length ? "" : "..."} [${hasText ? " merge" : "add"}]` )
+            console.log(`  - ${file}(${start.line}, ${1 + start.column}) ${escape(head)}${head.length === text.length ? "" : "..."} [${hasText ? "merge" : "add"}]` )
         }
     }
     console.log(``)
@@ -135,7 +135,6 @@ export const saveLicense = async (files: string[] | string, outFile: string, { p
     await writeFile(outFile, Array.from(licenseSet).join("\n\n"), { encoding })
     console.log("# Finish")
     console.log(`  - Out: ${outFile}`)
+    console.log(`  - Count: ${licenseSet.size}`)
     console.log(`  - Time: ${(Date.now() - ms1) / 1000}s`)
 }
-
-export default saveLicense

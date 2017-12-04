@@ -1,8 +1,9 @@
 {
   "name": "save-license",
-  "version": "0.0.4",
+  "version": "0.0.8",
   "description": "save-license",
-  "main": "out/src/index.js",
+  "main": "./out/src/index.js",
+  "types": "./out/src/index.d.ts",
   "dependencies": {
     "esprima": "^4.0.0",
     "tslib": "^1.8.0"
