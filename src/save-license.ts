@@ -4,7 +4,16 @@ import * as estree from "estree"
 import * as esprima from "esprima"
 
 
-export const defaultLicensePattern = /^!|^@(preserve|cc_on)\b|\b(MIT|MPL|GPL|License|Copyright)\b|\W\(c\)|©/mi
+export interface SaveLicenseOptions {
+    readonly patterns: ReadonlyArray<RegExp>
+    readonly encoding: string
+}
+export const defaultOptions: SaveLicenseOptions = Object.freeze({
+    patterns: Object.freeze([
+        /^!|^@(preserve|cc_on)\b|\b(MIT|MPL|GPL|License|Copyright)\b|\W\(c\)|©/mi
+    ]),
+    encoding: "utf8",
+})
 
 const readFile = promisify(fs.readFile)
 const writeFile = promisify(fs.writeFile)
@@ -64,7 +73,7 @@ export const getCommentBlocks = (comments: ReadonlyArray<estree.Comment>) => {
     return blocks
 }
 
-export function getLicences(code: string, pattern = defaultLicensePattern) {
+export function getLicences(code: string, patterns: ReadonlyArray<RegExp>) {
     code = code.replace(/[\r\n]+/g, "\n")
 
     const program = esprima.parseScript(code, {
@@ -76,7 +85,7 @@ export function getLicences(code: string, pattern = defaultLicensePattern) {
     if (comments === void 0) { return [] }
 
     return getCommentBlocks(comments)
-        .filter(b => b.some(c => pattern.test(c.value)))
+        .filter(b => b.some(c => patterns.some(p => p.test(c.value))))
 }
 
 const escape = (s: string) => s.replace(/[\u0008\t\n\v\f\r"'`\\]/, s => {
@@ -94,17 +103,21 @@ const escape = (s: string) => s.replace(/[\u0008\t\n\v\f\r"'`\\]/, s => {
         default: return s
     }
 })
-export const saveLicense = async (files: string[], outFile: string, { licensePattern = defaultLicensePattern, encoding = "utf8" } = {}) => {
+
+export const saveLicense = async (files: string[] | string, outFile: string, { patterns, encoding }: Partial<SaveLicenseOptions> = defaultOptions) => {
+    if (typeof files === "string") { files = [files] }
+
     const ms1 = Date.now()
     console.log(`# Start save-license`)
-    console.log(`  - Pattern: \`${licensePattern}\``)
+    console.log(`  - Patterns: ${patterns.join(", ")}`)
     console.log(`  - Encoding: ${encoding}`)
     console.log(``)
 
     console.log(`# Read licenses`)
     const licenseSet = new Set<string>()
+
     for (const file of files) {
-        const licenses = await getLicences(await readFile(file, encoding), licensePattern)
+        const licenses = await getLicences(await readFile(file, encoding), patterns)
         for (const block of licenses) {
             const start = block[0].loc!.start
             const text = block.map(c => c.value).join("\n")
@@ -124,3 +137,5 @@ export const saveLicense = async (files: string[], outFile: string, { licensePat
     console.log(`  - Out: ${outFile}`)
     console.log(`  - Time: ${(Date.now() - ms1) / 1000}s`)
 }
+
+export default saveLicense

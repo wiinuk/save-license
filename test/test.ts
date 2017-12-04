@@ -1,6 +1,6 @@
 import "mocha"
 import { assert } from "chai"
-import { getCommentBlocks, getLicences } from "../src/save-license"
+import { getCommentBlocks, getLicences, defaultOptions } from "../src/save-license"
 import * as esprima from "esprima"
 
 describe("save-license", () => {
@@ -44,34 +44,49 @@ describe("save-license", () => {
 
     it("getLicenses", () => {
         const comments = getLicences(`
-/*!
+/*
  * @license  MIT
  */
+""
 
 /* Copyright (c) _
  */
+""
 
 /**
  * released under the MIT license _
  */
+""
 
 // Copyright _
 // THE SOFTWARE IS _
-
-var a = 0;
+""
 
 // (C) _
 //
 // This software is _
-`
-        )
+""
+
+/*!
+ * _
+ */
+""
+
+// _
+
+// (c) _
+""
+`, defaultOptions.patterns)
+
         const actual = comments.map(cs => cs.map(c => c.value).join("\n"))
         const expected = [
-            "!\n * @license  MIT\n ",
+            "\n * @license  MIT\n ",
             " Copyright (c) _\n ",
             "*\n * released under the MIT license _\n ",
             " Copyright _\n THE SOFTWARE IS _",
             " (C) _\n\n This software is _",
+            "!\n * _\n ",
+            " _\n (c) _"
         ]
         assert.deepEqual(actual, expected, JSON.stringify(comments))
     })

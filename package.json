@@ -1,6 +1,6 @@
 {
   "name": "save-license",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "save-license",
   "main": "out/src/index.js",
   "dependencies": {
