@@ -104,16 +104,20 @@ const escape = (s: string) => s.replace(/[\u0008\t\n\v\f\r"'`\\]/, s => {
     }
 })
 
-export const saveLicense = async (files: string[] | string, outFile: string, { patterns, encoding }: Partial<SaveLicenseOptions> = defaultOptions) => {
+function log(format: TemplateStringsArray, ...objs: unknown[]) {
+    console.log(String.raw(format, ...objs))
+}
+
+export const saveLicense = async (files: string[] | string, outFile: string, { patterns = [], encoding = "" }: Partial<SaveLicenseOptions> = defaultOptions) => {
     if (typeof files === "string") { files = [files] }
 
     const ms1 = Date.now()
-    console.log(`# Start save-license`)
-    console.log(`  - Patterns: ${patterns.join(", ")}`)
-    console.log(`  - Encoding: "${escape(encoding)}"`)
-    console.log(``)
+    log`# Start save-license`
+    log`  - Patterns: ${patterns.join(", ")}`
+    log`  - Encoding: "${escape(encoding)}"`
+    log``
 
-    console.log(`# Read licenses`)
+    log`# Read licenses`
     const licenseSet = new Set<string>()
 
     for (const file of files) {
@@ -124,17 +128,19 @@ export const saveLicense = async (files: string[] | string, outFile: string, { p
             if (hasText === false) {
                 licenseSet.add(text)
             }
-            
+
             const start = block[0].loc!.start
             const head = text.substr(0, 10)
-            console.log(`  - ${file}(${start.line}, ${1 + start.column}) ${escape(head)}${head.length === text.length ? "" : "..."} [${hasText ? "merge" : "add"}]` )
+            const ellipsis = head.length === text.length ? "" : "..."
+            const operation = hasText ? "merge" : "add"
+            log`  - ${file}(${start.line}, ${1 + start.column}) ${escape(head)}${ellipsis} [${operation}]`
         }
     }
-    console.log(``)
+    log``
 
     await writeFile(outFile, Array.from(licenseSet).join("\n\n"), { encoding })
-    console.log("# Finish")
-    console.log(`  - Out: ${outFile}`)
-    console.log(`  - Count: ${licenseSet.size}`)
-    console.log(`  - Time: ${(Date.now() - ms1) / 1000}s`)
+    log`# Finish`
+    log`  - Out: ${outFile}`
+    log`  - Count: ${licenseSet.size}`
+    log`  - Time: ${(Date.now() - ms1) / 1000}s`
 }
