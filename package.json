@@ -5,17 +5,17 @@
   "main": "./out/src/index.js",
   "types": "./out/src/index.d.ts",
   "dependencies": {
-    "esprima": "^4.0.0",
-    "tslib": "^1.8.0"
+    "esprima": "^4.0.1",
+    "tslib": "^1.11.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.6",
-    "@types/esprima": "^4.0.1",
-    "@types/mocha": "^2.2.44",
-    "@types/node": "^8.0.53",
-    "chai": "^4.1.2",
-    "mocha": "^4.0.1",
-    "typescript": "^2.6.2"
+    "@types/chai": "^4.2.11",
+    "@types/esprima": "^4.0.2",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.13.5",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.2",
+    "typescript": "^3.8.3"
   },
   "scripts": {
     "prepublishOnly": "npm run test",
