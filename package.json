@@ -1,6 +1,6 @@
 {
   "name": "save-license",
-  "version": "0.0.8",
+  "version": "0.1.2",
   "description": "save-license",
   "main": "./out/src/index.js",
   "types": "./out/src/index.d.ts",
